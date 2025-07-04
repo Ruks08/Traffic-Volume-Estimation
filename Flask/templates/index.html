@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Volume Estimation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif; /* Changed font */
+      /* Updated background image URL for better reliability */
+      background-image: url("https://media.istockphoto.com/id/672517946/photo/traffic-jam-in-city.jpg?s=612x612&w=0&k=20&c=9Uzrx9TpwmxFI5-_TF2XCRtVuDq_hGZiJLFVfcdEQqU=");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex; /* Flexbox for centering */
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh; /* Full viewport height */
+      padding: 1rem; /* p-4 */
+      margin: 0;
+    }
+
+    .container {
+      background-color: rgba(17, 24, 39, 0.8); /* bg-gray-900 bg-opacity-80 */
+      padding: 2rem; /* p-8 */
+      max-width: 26rem; /* Slightly increased max-width from 24rem for better heading fit */
+      margin: auto; /* mx-auto */
+      border-radius: 0.75rem; /* rounded-xl */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+      width: 100%; /* w-full */
+    }
+
+    h1 {
+      text-align: center; /* text-center */
+      color: #60a5fa; /* text-blue-400 */
+      font-size: 1.7rem; /* Slightly reduced font size for single line */
+      font-weight: bold; /* font-bold */
+      margin-bottom: 1.5rem; /* mb-6 */
+      white-space: nowrap; /* Force heading to stay on a single line */
+      overflow: hidden; /* Hide any overflow if the text is too long */
+      text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+    }
+
+    form > div {
+      margin-bottom: 1rem; /* space-y-4 converted to margin-bottom for children */
+    }
+
+    label {
+      display: block; /* block */
+      color: #e5e7eb; /* text-gray-200 */
+      font-size: 0.875rem; /* text-sm */
+      font-weight: 600; /* font-semibold */
+      margin-bottom: 0.25rem; /* mb-1 */
+    }
+
+    input, select {
+      width: 100%; /* w-full */
+      padding: 0.5rem; /* p-2 */
+      background-color: #374151; /* bg-gray-700 */
+      color: white; /* text-white */
+      border: 1px solid #4b5563; /* border border-gray-600 */
+      border-radius: 0.5rem; /* rounded-lg */
+      font-size: 0.875rem; /* text-sm */
+      /* Focus styles */
+      outline: none;
+      box-shadow: 0 0 0 2px transparent;
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    input:focus, select:focus {
+      border-color: #3b82f6; /* focus:border-blue-500 */
+      box-shadow: 0 0 0 2px #3b82f6; /* focus:ring-blue-500 */
+    }
+
+    button {
+      width: 100%; /* w-full */
+      padding: 0.75rem; /* py-3 */
+      margin-top: 1.5rem; /* mt-6 */
+      background-color: #3b82f6; /* bg-blue-500 */
+      color: white; /* text-white */
+      font-weight: 600; /* font-semibold */
+      border-radius: 0.5rem; /* rounded-lg */
+      transition: background-color 0.2s ease-in-out; /* transition-colors duration-200 */
+      font-size: 1.125rem; /* text-lg */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+      cursor: pointer;
+      border: none; /* Remove default button border */
+    }
+
+    button:hover {
+      background-color: #2563eb; /* hover:bg-blue-600 */
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div class="container">
+    <h1>
+      Traffic Volume Estimaton
+    </h1>
+    <form action="{{ url_for('predict') }}" method="POST">
+
+      <div>
+        <label for="holiday">Holiday:</label>
+        <select name="holiday" id="holiday" required>
+          <option value=7>None</option>
+          <option value=1>Columbus Day</option>
+          <option value=10>Veterans Day</option>
+          <option value=9>Thanksgiving Day</option>
+          <option value=0>Christmas Day</option>
+          <option value=6>New Years Day</option>
+          <option value=11>Washington's Birthday</option>
+          <option value=5>Memorial Day</option>
+          <option value=2>Independence Day</option>
+          <option value=8>State Fair</option>
+          <option value=3>Labor Day</option>
+          <option value=4>MLK Jr Day</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="temp">Temperature (°K):</label>
+        <input type="number" name="temp" id="temp" step="0.01" required placeholder="e.g., 273.15">
+      </div>
+
+      <div>
+        <label for="rain">Rain (0 or 1):</label>
+        <input type="number" name="rain" id="rain" min="0" max="1" required placeholder="e.g., 0 for No Rain, 1 for Rain">
+      </div>
+
+      <div>
+        <label for="snow">Snow (0 or 1):</label>
+        <input type="number" name="snow" id="snow" min="0" max="1" required placeholder="e.g., 0 for No Snow, 1 for Snow">
+      </div>
+
+      <div>
+        <label for="weather">Weather:</label>
+        <select name="weather" id="weather" required>
+          <option value=1>Clouds</option>
+          <option value=0>Clear</option>
+          <option value=6>Rain</option>
+          <option value=2>Drizzle</option>
+          <option value=5>Mist</option>
+          <option value=4>Haze</option>
+          <option value=3>Fog</option>
+          <option value=10>Thunderstorm</option>
+          <option value=8>Snow</option>
+          <option value=9>Squall</option>
+          <option value=7>Smoke</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" min="2012" max="2022" required placeholder="e.g., 2021">
+      </div>
+
+      <div>
+        <label for="month">Month:</label>
+        <input type="number" name="month" id="month" min="1" max="12" required placeholder="e.g., 7 (for July)">
+      </div>
+
+      <div>
+        <label for="day">Day:</label>
+        <input type="number" name="day" id="day" min="1" max="31" required placeholder="e.g., 15">
+      </div>
+
+      <div>
+        <label for="hours">Hour:</label>
+        <input type="number" name="hours" id="hours" min="0" max="23" required placeholder="e.g., 14 (for 2 PM)">
+      </div>
+
+      <div>
+        <label for="minutes">Minutes:</label>
+        <input type="number" name="minutes" id="minutes" min="0" max="59" required placeholder="e.g., 30">
+      </div>
+
+      <div>
+        <label for="seconds">Seconds:</label>
+        <input type="number" name="seconds" id="seconds" min="0" max="59" required placeholder="e.g., 0-59">
+      </div>
+
+      <button type="submit">
+        Predict 
+      </button>
+    </form>
+  </div>
+</body>
+</html>
